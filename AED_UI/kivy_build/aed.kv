@@ -1,0 +1,448 @@
+#:import dp kivy.metrics.dp
+#:import sp kivy.metrics.sp
+
+# ============================================================
+# 颜色常量
+# ============================================================
+#:set C_BG        (0.039, 0.055, 0.102, 1)
+#:set C_BG_CARD   (0.051, 0.078, 0.157, 0.9)
+#:set C_BORDER    (0.118, 0.227, 0.373, 1)
+#:set C_CYAN      (0.0,   0.898, 1.0,   1)
+#:set C_GREEN     (0.0,   1.0,   0.533, 1)
+#:set C_RED       (1.0,   0.267, 0.267, 1)
+#:set C_ORANGE    (1.0,   0.533, 0.0,   1)
+#:set C_YELLOW    (1.0,   0.8,   0.0,   1)
+#:set C_TEXT      (0.784, 0.839, 0.941, 1)
+#:set C_TEXT_DIM  (0.467, 0.6,   0.8,   1)
+#:set C_TEXT_MUTE (0.267, 0.333, 0.4,   1)
+#:set C_BUTTON    (0.0,   0.4,   0.6,   1)
+#:set C_INPUT_BG  (0.051, 0.086, 0.157, 1)
+
+# ============================================================
+# 报警历史行
+# ============================================================
+<AlarmRow>:
+    size_hint_y: None
+    height: dp(36)
+    padding: [dp(8), dp(4)]
+    spacing: dp(4)
+    canvas.before:
+        Color:
+            rgba: C_BORDER if self.index % 2 == 0 else (0.06, 0.09, 0.15, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        text: root.time_text
+        color: C_TEXT_MUTE
+        font_size: sp(10)
+        size_hint_x: 0.35
+        halign: 'left'
+        shorten: True
+    Label:
+        text: root.level_text
+        color: root.level_color
+        font_size: sp(11)
+        bold: True
+        size_hint_x: 0.18
+        halign: 'center'
+    Label:
+        text: root.msg_text
+        color: C_TEXT
+        font_size: sp(10)
+        size_hint_x: 0.47
+        halign: 'left'
+        shorten: True
+
+# ============================================================
+# 主屏幕
+# ============================================================
+<MainScreen>:
+    orientation: 'vertical'
+    padding: [dp(8), dp(6), dp(8), dp(6)]
+    spacing: dp(6)
+
+    # ---- 顶部栏 ----
+    BoxLayout:
+        size_hint_y: None
+        height: dp(48)
+        spacing: dp(8)
+        canvas.before:
+            Color:
+                rgba: C_BG_CARD
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(10)]
+            Color:
+                rgba: C_BORDER
+            Line:
+                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+                width: dp(1)
+
+        Label:
+            text: '●'
+            color: root.conn_color
+            font_size: sp(18)
+            size_hint_x: None
+            width: dp(28)
+
+        Label:
+            text: 'AED 监控平台'
+            color: C_CYAN
+            font_size: sp(16)
+            bold: True
+            size_hint_x: None
+            width: dp(140)
+            halign: 'left'
+            shorten: True
+
+        Widget:
+            size_hint_x: 1  # spacer
+
+        Label:
+            text: 'IP'
+            color: C_TEXT_DIM
+            font_size: sp(11)
+            size_hint_x: None
+            width: dp(20)
+
+        TextInput:
+            id: txt_ip
+            text: '192.168.1.103'
+            size_hint_x: None
+            width: dp(130)
+            height: dp(34)
+            font_size: sp(12)
+            multiline: False
+            background_color: C_INPUT_BG
+            foreground_color: C_CYAN
+            cursor_color: C_CYAN
+            padding: [dp(8), dp(6)]
+
+        Button:
+            text: root.btn_text
+            size_hint_x: None
+            width: dp(100)
+            height: dp(34)
+            font_size: sp(12)
+            bold: True
+            background_color: C_BUTTON
+            background_normal: ''
+            color: 1, 1, 1, 1
+            on_release: root.toggle_connection()
+
+        Label:
+            text: '● ' + root.conn_status
+            color: root.conn_color
+            font_size: sp(11)
+            bold: True
+            size_hint_x: None
+            width: dp(85)
+
+    # ---- 主体内容（可滚动） ----
+    ScrollView:
+        do_scroll_x: False
+        bar_width: dp(6)
+        scroll_type: ['bars', 'content']
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(6)
+
+            # ===== 状态面板 =====
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(160)
+                padding: [dp(10), dp(8)]
+                spacing: dp(3)
+                canvas.before:
+                    Color:
+                        rgba: C_BG_CARD
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    Color:
+                        rgba: C_BORDER
+                    Line:
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+                        width: dp(1)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(24)
+                    spacing: dp(4)
+                    Label:
+                        text: 'VIDEO'
+                        color: C_CYAN
+                        font_size: sp(10)
+                        bold: True
+                        size_hint_x: None
+                        width: dp(50)
+                    Label:
+                        text: '机器人实时状态'
+                        color: C_TEXT
+                        font_size: sp(12)
+                        bold: True
+                        halign: 'left'
+
+                GridLayout:
+                    cols: 3
+                    rows: 2
+                    spacing: [dp(6), dp(4)]
+                    padding: [dp(2), dp(4)]
+
+                    DataRow:
+                        label: 'X 坐标'
+                        value: root.v_x
+                    DataRow:
+                        label: 'Y 坐标'
+                        value: root.v_y
+                    DataRow:
+                        label: '偏航角'
+                        value: root.v_yaw
+                    DataRow:
+                        label: '线速度'
+                        value: root.v_vlin
+                    DataRow:
+                        label: '角速度'
+                        value: root.v_vang
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(36)
+                        spacing: dp(4)
+                        canvas.before:
+                            Color:
+                                rgba: (0.063, 0.118, 0.22, 0.6)
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(6)]
+                            Color:
+                                rgba: (0.086, 0.176, 0.314, 1)
+                            Line:
+                                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(6))
+                                width: dp(0.5)
+                        Label:
+                            text: '导航状态'
+                            color: C_TEXT_DIM
+                            font_size: sp(11)
+                            bold: True
+                            size_hint_x: None
+                            width: dp(70)
+                            halign: 'right'
+                        Label:
+                            text: root.v_nav
+                            color: root.nav_color
+                            font_size: sp(12)
+                            bold: True
+                            shorten: True
+
+            # ===== 地图 =====
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: max(dp(280), root.width * 0.55)
+                padding: [dp(10), dp(6), dp(10), dp(10)]
+                spacing: dp(4)
+                canvas.before:
+                    Color:
+                        rgba: C_BG_CARD
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    Color:
+                        rgba: C_BORDER
+                    Line:
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+                        width: dp(1)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(24)
+                    spacing: dp(4)
+                    Label:
+                        text: 'MAP'
+                        color: C_CYAN
+                        font_size: sp(10)
+                        bold: True
+                        size_hint_x: None
+                        width: dp(50)
+                    Label:
+                        text: '实时地图与轨迹'
+                        color: C_TEXT
+                        font_size: sp(12)
+                        bold: True
+                        halign: 'left'
+                    Label:
+                        text: root.v_coord
+                        id: _
+                        color: C_TEXT_MUTE
+                        font_size: sp(10)
+                        size_hint_x: None
+                        width: dp(100)
+                        halign: 'right'
+
+                MapWidget:
+                    id: map_widget
+
+            # ===== 摄像头 =====
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(200)
+                padding: [dp(10), dp(6), dp(10), dp(10)]
+                spacing: dp(4)
+                canvas.before:
+                    Color:
+                        rgba: C_BG_CARD
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    Color:
+                        rgba: C_BORDER
+                    Line:
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+                        width: dp(1)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(24)
+                    spacing: dp(4)
+                    Label:
+                        text: 'CAM'
+                        color: C_CYAN
+                        font_size: sp(10)
+                        bold: True
+                        size_hint_x: None
+                        width: dp(50)
+                    Label:
+                        text: '现场画面'
+                        color: C_TEXT
+                        font_size: sp(12)
+                        bold: True
+                        halign: 'left'
+
+                Widget:
+                    id: cam_image
+                    canvas.before:
+                        Color:
+                            rgba: (0.039, 0.059, 0.122, 1)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+            # ===== 报警区域 =====
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(180)
+                padding: [dp(10), dp(6), dp(10), dp(10)]
+                spacing: dp(4)
+                canvas.before:
+                    Color:
+                        rgba: C_BG_CARD
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    Color:
+                        rgba: C_BORDER
+                    Line:
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+                        width: dp(1)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(28)
+                    spacing: dp(4)
+                    Label:
+                        text: 'ALARM'
+                        color: C_CYAN
+                        font_size: sp(10)
+                        bold: True
+                        size_hint_x: None
+                        width: dp(50)
+                    Label:
+                        text: '实时报警信息'
+                        color: C_TEXT
+                        font_size: sp(12)
+                        bold: True
+                        halign: 'left'
+                    Widget:
+                        size_hint_x: 1
+                    Button:
+                        text: '历史记录'
+                        size_hint_x: None
+                        width: dp(80)
+                        height: dp(26)
+                        font_size: sp(11)
+                        bold: True
+                        background_color: (0.086, 0.125, 0.25, 1)
+                        background_normal: ''
+                        color: C_CYAN
+                        on_release: root.show_history()
+
+                RecycleView:
+                    id: alarm_rv
+                    data: root.alarm_items
+                    viewclass: 'AlarmRow'
+                    do_scroll_x: False
+                    bar_width: dp(4)
+                    RecycleBoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        default_size_hint: 1, None
+                        default_size: (0, dp(36))
+                        spacing: dp(1)
+
+            # 底部留白
+            Widget:
+                size_hint_y: None
+                height: dp(20)
+
+
+# ============================================================
+# 数据行组件
+# ============================================================
+<DataRow>:
+    label: ''
+    value: ''
+    size_hint_y: None
+    height: dp(36)
+    spacing: dp(4)
+    canvas.before:
+        Color:
+            rgba: (0.063, 0.118, 0.22, 0.6)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(6)]
+        Color:
+            rgba: (0.086, 0.176, 0.314, 1)
+        Line:
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(6))
+            width: dp(0.5)
+    Label:
+        text: root.label
+        color: C_TEXT_DIM
+        font_size: sp(11)
+        bold: True
+        size_hint_x: None
+        width: dp(60)
+        halign: 'right'
+    Label:
+        text: root.value
+        color: C_CYAN
+        font_size: sp(12)
+        bold: True
+
+
+

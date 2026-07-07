@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[codz]
+*$py.class
+*.pyo
+*.egg-info/
+dist/
+*.egg
+*.so
+
+# PyInstaller
+*.manifest
+*.spec
+build/
+*.pkg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# STM32 build artifacts
+Debug/
+Release/
+*.o
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# Database files
+*.db
+*.rdb
+*.aof
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ROS
+log/
+install/
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PyCharm
+.idea/
+
+# Streamlit
+.streamlit/secrets.toml
